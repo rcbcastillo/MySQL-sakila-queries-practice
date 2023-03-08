@@ -6,8 +6,7 @@ FROM `actor`;
 /* 2 Find all actors with the first_name 'John'*/
 SELECT *
 FROM `actor`
-WHERE `first_name` = 'John' 
-LIMIT 1;
+WHERE `first_name` = 'John';
 
 /* 3 Find all actors with the surname 'Neeson' */
 SELECT *
@@ -37,7 +36,7 @@ WHERE `rating` != 'R';
 /* 8 Find the 10 most shortest movies. Now return only the movie titles'*/
 SELECT `title`, `length`
 FROM `film`
-ORDER BY `length`
+ORDER BY `length` ASC
 LIMIT 10;
 
 /* 9 Find all movies with Deleted Scenes*/
@@ -46,14 +45,14 @@ FROM `film`
 WHERE `special_features` LIKE '%Deleted Scenes%';
 
 /* 10 How many distinct countries are there*/
-SELECT COUNT(DISTINCT `country`) AS 'number_of_distinct_countries'
+SELECT COUNT( DISTINCT `country`) AS 'number_of_distinct_countries'
 FROM `country`;
 
 /* 11 What are the names of all the languages in the database
 (sorted alphabetically)?*/
 SELECT DISTINCT `name` AS 'language_names'
 FROM `language`
-ORDER BY `name`;
+ORDER BY `name` ASC;
 
 
 
