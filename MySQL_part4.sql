@@ -31,26 +31,23 @@ HAVING `fullname` = 'Fred Costner';
 
 /*4 Find out which location has the most copies of BUCKET BROTHERHOOD*/
 SELECT
-	`film`.`title`,
+	`film`.`title`, 
     COUNT(`film`.`title`)
 FROM `inventory` AS `i`
-JOIN `film`
-ON `i`.`film_id` = `film`.`film_id`
+JOIN `film` ON `i`.`film_id` = `film`.`film_id`
 GROUP BY `title`;
 
+SELECT * FROM `address`;
 -- the first thing to know is where are the copies
 
 
 /* 5 Create a list of categories and the number of films for each  category*/
-
 SELECT 
 	`c`.`name` AS 'category_name',
 	COUNT(`f`.`title`) AS 'number_of_films'
 FROM `film_category` AS `fc`
-JOIN `category` AS `c`
-ON `fc`.`category_id` = `c`.`category_id`
-JOIN `film` AS `f`
-ON `fc`.`film_id` = `f`.`film_id`
+JOIN `category` AS `c` ON `fc`.`category_id` = `c`.`category_id`
+JOIN `film` AS `f` ON `fc`.`film_id` = `f`.`film_id`
 GROUP BY `category_name`;
 
 /*6 Create a list of actors and the number of movies by each actor*/
@@ -58,28 +55,30 @@ SELECT
 	CONCAT(`a`.`first_name`,' ', `a`.`last_name`) AS 'fullname',
 	COUNT(`f`.`title`) AS 'number_of_films'
 FROM `film_actor` AS `fa`
-JOIN `actor` AS `a`
-ON `fa`.`actor_id` = `a`.`actor_id`
-JOIN `film` AS `f`
-ON `fa`.`film_id` = `f`.`film_id`
+JOIN `actor` AS `a` ON `fa`.`actor_id` = `a`.`actor_id`
+JOIN `film` AS `f` ON `fa`.`film_id` = `f`.`film_id`
 GROUP BY `fullname`;
 
 /*7 Is 'Academy Dinosaur' available for rent from Store 1*/
 SELECT
-	`film`.`title`,
+	`f`.`title`, 
+    `i`.`inventory_id`,
     `i`.`store_id`    
 FROM `inventory` AS `i`
-JOIN `film`
-ON `i`.`film_id` = `film`.`film_id`
-HAVING `title` = 'Academy Dinosaur' AND `store_id` = 1; -- it is avaialble
+JOIN `store` AS `s` ON `i`.`store_id` = `s`.`store_id`
+JOIN `film` AS `f` ON `i`.`film_id` = `f`.`film_id`
+WHERE `f`.`title` = 'ACADEMY DINOSAUR'
+AND `s`.`store_id` = 1; -- it is available
 
 /*8 When is 'Academy Dinosaur' due*/
-SELECT `film`.`title`, `film`.`rental_duration`,
-		DATEDIFF(`rental`.`return_date`,`rental`.`rental_date`) AS 'diff',
-        `rental`.`return_date`
-FROM `rental`
-JOIN `inventory`
-ON `rental`.`inventory_id` = `inventory`.`inventory_id`
-JOIN `film`
-ON `inventory`.`film_id` = `film`.`film_id`
-HAVING `title` = 'ACADEMY DINOSAUR' AND `rental_duration` < `diff`;
+SELECT 
+	CONCAT(`customer`.`last_name`, '', `customer`.`first_name`) AS 'customer_name',
+	`film`.`title`,
+    (`rental`.`rental_date` + interval(`film`.`rental_duration`) DAY) AS 'due_return_date'
+FROM `rental` 
+JOIN `customer` ON `rental`.`customer_id` = `customer`.`customer_id`
+JOIN `inventory` ON `rental`.`inventory_id` = `inventory`.`inventory_id`
+JOIN `film` ON `inventory`.`film_id` = `film`.`film_id`
+WHERE `rental`.`return_date` IS NULL
+AND (`rental`.`rental_date` + interval(`film`.`rental_duration`) DAY) < current_date()
+AND `title` = 'ACADEMY DINOSAUR';
