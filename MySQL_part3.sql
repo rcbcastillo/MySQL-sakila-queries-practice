@@ -29,9 +29,23 @@ HAVING `rating` = (
 
 /* 3 List the unique records for Sci-Fi movies where male
 24-year-old students have given 5-star ratings */
-SELECT `id`
+SELECT `users`.`age`, 	
+	`users`.`gender`, 
+    `users`.`id`, 
+    `ratings`.`movie_id`, 
+    `ratings`.`rating`,
+    `genres_movies`.`genre_id`,
+    `genres`.`name`
 FROM `users`
-WHERE `age`=24 AND `gender`='M';
+JOIN `ratings`
+ON `users`.`id` = `ratings`.`user_id`
+JOIN `genres_movies`
+ON `ratings`.`movie_id` =`genres_movies`.`movie_id`
+JOIN `genres`
+ON `genres_movies`.`genre_id` = `genres`.`id`
+HAVING `age`=24 AND `gender`='M' AND `rating`= 5 AND `name`='Sci-Fi';
+
+SELECT * FROM `genres`;
 
 --- Now I need to relate the user id to the rating---
 
